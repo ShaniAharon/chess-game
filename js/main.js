@@ -3,6 +3,7 @@ let LWRook;
 let bRook;
 let player1;
 let player2;
+//test
 
 function init() {
   gBoard = createBoard();
