@@ -1,6 +1,8 @@
 let gBoard;
 let LWRook;
-let bRook;
+let RWRook;
+let LBRook;
+let RBRook;
 let player1;
 let player2;
 //test
@@ -9,13 +11,18 @@ function init() {
   gBoard = createBoard();
   printBoard(gBoard, ".gameBoard");
   colorCells();
+  RWRook = new Rook("RWRook", "white", "&#9814;", false);
+  RWRook.display();
   LWRook = new Rook("LWRook", "white", "&#9814;", false);
   LWRook.display();
   player1 = new Player("shani", "white", "");
   // RWRook = new Rook("RWRook", "white", "&#9814;", false);
   // RWRook.display();
-  bRook = new Rook("LBRook", "black", "&#9820;", false);
-  bRook.display();
+  LBRook = new Rook("LBRook", "black", "&#9820;", false);
+  LBRook.display();
+  RBRook = new Rook("RBRook", "black", "&#9820;", false);
+  RBRook.display();
+
   player2 = new Player("dude", "black", "");
 }
 
@@ -66,24 +73,75 @@ function colorCells() {
 }
 let isWhiteFirstClick = true;
 let isBlackFirstClick = true;
-
+let selectedPiece;
 function cellClicked(elCell) {
+  let cellCoords = getCoords(elCell);
+  let boardCell = gBoard[cellCoords.i][cellCoords.j];
+
   //only when its white turn , can move
   if (player1.turn) {
     //white move
     //click rook
-    if (elCell.innerHTML === "♖" && isWhiteFirstClick) {
-      LWRook.colorPossibleMoves();
+    //check if R or L rook
+    if (
+      elCell.innerHTML === "♖" &&
+      isWhiteFirstClick &&
+      boardCell === "RWRook"
+    ) {
+      RWRook.colorPossibleMoves();
+      selectedPiece = boardCell;
       isWhiteFirstClick = false;
       //click rook second time
-    } else if (elCell.innerHTML === "♖" && !isWhiteFirstClick) {
+    } else if (
+      elCell.innerHTML === "♖" &&
+      !isWhiteFirstClick &&
+      boardCell === "RWRook"
+    ) {
+      RWRook.removeColorPossibleMoves();
       LWRook.removeColorPossibleMoves();
       isWhiteFirstClick = true;
       //after the way colored
       //click other cell for rook to move there
-    } else if (!isWhiteFirstClick && elCell.style.border === "1px solid red") {
+    } else if (
+      !isWhiteFirstClick &&
+      elCell.style.border === "1px solid red" &&
+      selectedPiece === "RWRook"
+    ) {
+      RWRook.move(elCell);
+      selectedPiece = "";
+      isWhiteFirstClick = true;
+      //move the turn to other player
+      player1.turn = false;
+      player2.turn = true;
+    }
+    //if its L rook
+    if (
+      elCell.innerHTML === "♖" &&
+      isWhiteFirstClick &&
+      boardCell === "LWRook"
+    ) {
+      LWRook.colorPossibleMoves();
+      isWhiteFirstClick = false;
+      selectedPiece = boardCell;
+      //click rook second time
+    } else if (
+      elCell.innerHTML === "♖" &&
+      !isWhiteFirstClick &&
+      boardCell === "LWRook"
+    ) {
+      LWRook.removeColorPossibleMoves();
+      RWRook.removeColorPossibleMoves();
+      isWhiteFirstClick = true;
+      //after the way colored
+      //click other cell for rook to move there
+    } else if (
+      !isWhiteFirstClick &&
+      elCell.style.border === "1px solid red" &&
+      selectedPiece === "LWRook"
+    ) {
       LWRook.move(elCell);
       isWhiteFirstClick = true;
+      selectedPiece = "";
       //move the turn to other player
       player1.turn = false;
       player2.turn = true;
@@ -92,15 +150,65 @@ function cellClicked(elCell) {
   //only when black turn , can move
   if (player2.turn) {
     //black move
-    if (elCell.innerHTML === "♜" && isBlackFirstClick) {
-      bRook.colorPossibleMoves();
+    if (
+      elCell.innerHTML === "♜" &&
+      isBlackFirstClick &&
+      boardCell === "RBRook"
+    ) {
+      RBRook.colorPossibleMoves();
+      selectedPiece = boardCell;
       isBlackFirstClick = false;
-    } else if (elCell.innerHTML === "♜" && !isBlackFirstClick) {
-      bRook.removeColorPossibleMoves();
+      //click rook second time
+    } else if (
+      elCell.innerHTML === "♜" &&
+      !isBlackFirstClick &&
+      boardCell === "RBRook"
+    ) {
+      RBRook.removeColorPossibleMoves();
+      LBRook.removeColorPossibleMoves();
       isBlackFirstClick = true;
-    } else if (!isBlackFirstClick && elCell.style.border === "1px solid red") {
-      bRook.move(elCell);
+      //after the way colored
+      //click other cell for rook to move there
+    } else if (
+      !isBlackFirstClick &&
+      elCell.style.border === "1px solid red" &&
+      selectedPiece === "RBRook"
+    ) {
+      RBRook.move(elCell);
+      selectedPiece = "";
       isBlackFirstClick = true;
+      //move the turn to other player
+      player1.turn = true;
+      player2.turn = false;
+    }
+    //if its L rook
+    if (
+      elCell.innerHTML === "♜" &&
+      isBlackFirstClick &&
+      boardCell === "LBRook"
+    ) {
+      LBRook.colorPossibleMoves();
+      isBlackFirstClick = false;
+      selectedPiece = boardCell;
+      //click rook second time
+    } else if (
+      elCell.innerHTML === "♜" &&
+      !isBlackFirstClick &&
+      boardCell === "LBRook"
+    ) {
+      LBRook.removeColorPossibleMoves();
+      RBRook.removeColorPossibleMoves();
+      isBlackFirstClick = true;
+      //after the way colored
+      //click other cell for rook to move there
+    } else if (
+      !isBlackFirstClick &&
+      elCell.style.border === "1px solid red" &&
+      selectedPiece === "LBRook"
+    ) {
+      LBRook.move(elCell);
+      isBlackFirstClick = true;
+      selectedPiece = "";
       //move the turn to other player
       player1.turn = true;
       player2.turn = false;
@@ -145,22 +253,26 @@ class Rook extends Piece {
     super(name, color, symbol, eaten);
   }
   display() {
-    if (this.color === "white" && this.name === "LWRook") {
+    if (this.color === "white" && this.name === "RWRook") {
       const cell = document.querySelector("#cell7-7");
       cell.innerHTML = this.symbol;
       this.coords = { i: 7, j: 7 };
-    } else if (this.color === "white" && this.name === "RWRook") {
+      gBoard[this.coords.i][this.coords.j] = this.name;
+    } else if (this.color === "white" && this.name === "LWRook") {
       const cell = document.querySelector("#cell7-0");
       cell.innerHTML = this.symbol;
       this.coords = { i: 7, j: 0 };
+      gBoard[this.coords.i][this.coords.j] = this.name;
     } else if (this.color === "black" && this.name === "LBRook") {
       const cell = document.querySelector("#cell0-7");
       cell.innerHTML = this.symbol;
       this.coords = { i: 0, j: 7 };
+      gBoard[this.coords.i][this.coords.j] = this.name;
     } else if (this.color === "black" && this.name === "RBRook") {
       const cell = document.querySelector("#cell0-0");
       cell.innerHTML = this.symbol;
       this.coords = { i: 0, j: 0 };
+      gBoard[this.coords.i][this.coords.j] = this.name;
     }
   }
   newPos(newCoords) {
@@ -168,11 +280,13 @@ class Rook extends Piece {
       `#cell${this.coords.i}-${this.coords.j}`
     );
     cell.innerHTML = "";
+    gBoard[this.coords.i][this.coords.j] = "";
     const newCell = document.querySelector(
       `#cell${newCoords.i}-${newCoords.j}`
     );
     newCell.innerHTML = this.symbol;
     this.coords = newCoords;
+    gBoard[this.coords.i][this.coords.j] = this.name;
   }
 
   //trying new color func
@@ -204,6 +318,9 @@ class Rook extends Piece {
             if (cellI.innerText === "♜") {
               whitePassEnemyPieceTop = true;
             }
+            //Encounter white piece will block color
+          } else {
+            whitePassEnemyPieceTop = true;
           }
         }
         //BOTTOM
@@ -217,6 +334,8 @@ class Rook extends Piece {
             if (cellI.innerText === "♜") {
               whitePassEnemyPieceBottom = true;
             }
+          } else {
+            whitePassEnemyPieceBottom = true;
           }
         }
         // j row
@@ -233,6 +352,8 @@ class Rook extends Piece {
             if (cellI.innerText === "♜") {
               whitePassEnemyPieceLeft = true;
             }
+          } else {
+            whitePassEnemyPieceLeft = true;
           }
         }
         //RIGHT
@@ -246,6 +367,8 @@ class Rook extends Piece {
             if (cellI.innerText === "♜") {
               whitePassEnemyPieceRight = true;
             }
+          } else {
+            whitePassEnemyPieceRight = true;
           }
         }
       } else {
@@ -265,6 +388,8 @@ class Rook extends Piece {
             if (cellI.innerText === "♖") {
               blackPassEnemyPieceTop = true;
             }
+          } else {
+            blackPassEnemyPieceTop = true;
           }
         }
         //BOTTOM
@@ -278,6 +403,8 @@ class Rook extends Piece {
             if (cellI.innerText === "♖") {
               blackPassEnemyPieceBottom = true;
             }
+          } else {
+            blackPassEnemyPieceBottom = true;
           }
         }
         // j row
@@ -294,6 +421,8 @@ class Rook extends Piece {
             if (cellI.innerText === "♖") {
               blackPassEnemyPieceLeft = true;
             }
+          } else {
+            blackPassEnemyPieceLeft = true;
           }
         }
         //RIGHT
@@ -307,38 +436,13 @@ class Rook extends Piece {
             if (cellI.innerText === "♖") {
               blackPassEnemyPieceRight = true;
             }
+          } else {
+            blackPassEnemyPieceRight = true;
           }
         }
       }
     }
   }
-
-  // colorPossibleMoves() {
-  //   let isPassBlack = false;
-  //   let isPassWhite = false;
-  //   for (let i = 0; i < 8; i++) {
-  //     if (this.color === "white") {
-  //       const cellI = document.querySelector(`#cell${i}-${this.coords.j}`);
-  //       if (cellI.innerText === "" || cellI.innerText === "♜") {
-  //         cellI.style.border = "1px solid red";
-  //       }
-  //       const cellJ = document.querySelector(`#cell${this.coords.i}-${i}`);
-  //       if (cellJ.innerText === "" || cellJ.innerText === "♜") {
-  //         cellJ.style.border = "1px solid red";
-  //       }
-  //     } else {
-  //       const cellI = document.querySelector(`#cell${i}-${this.coords.j}`);
-  //       if (cellI.innerText === "" || cellI.innerText === "♖") {
-  //         cellI.style.border = "1px solid red";
-  //       }
-
-  //       const cellJ = document.querySelector(`#cell${this.coords.i}-${i}`);
-  //       if (cellJ.innerText === "" || cellJ.innerText === "♖") {
-  //         cellJ.style.border = "1px solid red";
-  //       }
-  //     }
-  //   }
-  // }
 
   removeColorPossibleMoves() {
     for (let i = 0; i < 8; i++) {
@@ -361,4 +465,12 @@ class Rook extends Piece {
       console.log("can't move there");
     }
   }
+}
+
+function getCoords(elCell) {
+  let str = elCell.id;
+  let newCoords = { i: 0, j: 0 };
+  newCoords.i = str[str.indexOf("-") - 1];
+  newCoords.j = str[str.indexOf("-") + 1];
+  return newCoords;
 }
