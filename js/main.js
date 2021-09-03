@@ -4,7 +4,7 @@ let bRook;
 let player1;
 let player2;
 //test
-
+//new stuff
 function init() {
   gBoard = createBoard();
   printBoard(gBoard, ".gameBoard");
